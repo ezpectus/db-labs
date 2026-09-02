@@ -23,9 +23,9 @@ __pycache__/
 DB_Labs/
 DB_template/
 
-# Reports (PDF/DOCX - not for git)
-MyWork/_reports/
-
 # Temp
 *.tmp
 *.log
+
+# Internal workflow
+WORKFLOW.md
