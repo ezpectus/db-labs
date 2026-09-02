@@ -1,0 +1,28 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+
+# Node
+node_modules/
+dist/
+
+# Prisma
+.env
+*.env
+
+# Python
+__pycache__/
+*.pyc
+
+# Reference folders (not mine)
+DB_Labs/
+DB_template/
+
+# Temp
+*.tmp
+*.log
