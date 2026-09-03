@@ -34,7 +34,7 @@ DB_labs/
 | # | Тема | Опис | Статус |
 |---|------|------|--------|
 | 1 | ER-діаграма | Концептуальна модель: 5 сутностей, 4 зв'язки | ✅ |
-| 2 | DDL | CREATE TABLE, INSERT — фізична схема в PostgreSQL | ⬜ |
+| 2 | DDL | CREATE TABLE, INSERT — фізична схема в PostgreSQL | ✅ |
 | 3 | OLTP | SELECT, INSERT, UPDATE, DELETE — CRUD-операції | ⬜ |
 | 4 | OLAP | JOIN, GROUP BY, HAVING, агрегатні функції | ⬜ |
 | 5 | Нормалізація | 1NF, 2NF, 3NF — перевірка та виправлення схеми | ⬜ |
