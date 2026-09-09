@@ -15,8 +15,8 @@
 |------|------|--------|
 | Lab_1 | Концептуальна модель БД (ER-діаграма) | ✅ |
 | Lab_2 | DDL: CREATE TABLE, INSERT | ✅ |
-| Lab_3 | OLTP: SELECT, INSERT, UPDATE, DELETE | ⬜ |
-| Lab_4 | OLAP: JOIN, агрегація, GROUP BY, HAVING | ⬜ |
+| Lab_3 | OLTP: SELECT, INSERT, UPDATE, DELETE | ✅ |
+| Lab_4 | OLAP: JOIN, агрегація, GROUP BY, HAVING | ✅ |
 | Lab_5 | Нормалізація (1NF–3NF) | ⬜ |
 | Lab_6 | Міграції схем (Prisma ORM) | ⬜ |
 | extras | Додаткові SQL-запити | ⬜ |
