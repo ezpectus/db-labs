@@ -2,67 +2,43 @@
 
 ## Завдання
 
-Провести перевірку та нормалізацію БД до 3NF.
+Провести перевірку та нормалізацію БД VideoHub до 3NF. Показати денормалізовану схему, виявити порушення, виправити через ALTER TABLE.
 
-### Крок 1: Перевірка 1NF
+### Крок 1: Денормалізована схема (з проблемами)
 
-**Правила:**
-- Усі атрибути містять лише атомарні (неподільні) значення
-- Відсутні повторювані групи атрибутів
-- Кожен запис унікальний
-- Порядок записів не важливий
+Створити таблицю `VideoDenormalized` з порушеннями:
+- `tags TEXT` — теги через кому (порушення 1NF)
+- `author_username`, `author_email` — дублювання даних автора (порушення 3NF, транзитивна залежність)
+- `category_and_subcategory TEXT` — об'єднана категорія (порушення 1NF)
 
-**Проблема:** атрибут `feature TEXT` у `GameCharacter` містив кілька рис через кому — порушення 1NF.
+### Крок 2: Перевірка 1NF
 
-**Рішення:**
-- Створити таблицю `FeatureSkill` (feature_id PK, feature_skill TEXT)
-- Створити зв'язуючу таблицю `CharacterFeature` (feature_id FK, character_id FK, складений PK)
-- Видалити атрибут `feature` з `GameCharacter`
+**Правила:** атомарні значення, відсутність повторюваних груп, унікальні записи.
 
-### Крок 2: Перевірка 2NF
+**Порушення:**
+- `tags` містить кілька значень через кому — не атомарне
+- `category_and_subcategory` містить два значення — не атомарне
 
-**Правила:**
-- Знаходиться в 1NF
-- Кожен неключовий атрибут повністю функціонально залежить від первинного ключа
+### Крок 3: Перевірка 2NF
 
-**Результат:** виконується для всіх таблиць.
+**Правила:** 1NF + неключові атрибути повністю залежать від PK.
 
-### Крок 3: Перевірка 3NF
+**Результат:** виконується (PK — одиночний id, часткових залежностей немає).
 
-**Правила:**
-- Знаходиться в 2NF
-- Відсутні транзитивні залежності неключових атрибутів від первинного ключа
+### Крок 4: Перевірка 3NF
 
-**Результат:** виконується, але таблиця `Item` потребує покращення.
+**Правила:** 2NF + відсутність транзитивних залежностей.
 
-### Крок 4: Виправлення таблиці Item
+**Порушення:**
+- `author_username` та `author_email` транзитивно залежать від `author_id` (video_id → author_id → username/email)
 
-**Проблема:** `item_type` був єдиним VARCHAR-полем, предмети не могли мати кілька типів.
+### Крок 5: Виправлення
 
-**Рішення:**
-- Створити таблицю `ItemsTypes` (item_type_id PK, item_type_name VARCHAR)
-- Створити зв'язуючу таблицю `ItemToItemType` (item_id FK, item_type_id FK, складений PK)
-- Створити таблицю `ItemTypeFood` (item_id FK, food_characteristic ENUM, characteristic_value REAL) — для предметів-їжі з додатковими характеристиками (HUNGER, HEALTH, SANITY)
-- Створити тип `type_food_characteristic` AS ENUM ('HUNGER', 'HEALTH', 'SANITY')
-- Видалити `item_type` з `Item`
+- Розбити `tags` на таблицю `Tag` + `VideoTag` (M:N)
+- Розбити `category_and_subcategory` на `category` + `subcategory`
+- Видалити `author_username` та `author_email` (використовувати JOIN з User)
+- ALTER TABLE для виправлення
 
-### Крок 5: Демонстрація денормалізації
+### Крок 6: Перевірка після нормалізації
 
-Показати приклад порушення нормалізації:
-- **Зміна #1:** об'єднати health, speed_move, speed_attack, strength_attack в одне TEXT-поле `characteristics` — порушення 1NF.
-- **Зміна #2:** додати item_id, durability, quantity_of_resources в Creature — порушення 1NF та 3NF (транзитивна залежність).
-
-### Підсумок змін схеми
-
-| До | Після |
-|----|-------|
-| `GameCharacter.feature TEXT` | `FeatureSkill` + `CharacterFeature` (M:N) |
-| `Item.item_type VARCHAR` | `ItemsTypes` + `ItemToItemType` (M:N) |
-| — | `ItemTypeFood` (характеристики їжі) |
-| ENUM: ('Hostile','Neutral','Passive') | ENUM: ('HOSTILE','NEUTRAL','PASSIVE') — верхній регістр |
-| UNIQUE на description | прибрано UNIQUE з description |
-
-## Оригінал
-
-- SQL-скрипт (до та після нормалізації): `../TesliaDiana/lab5/data.sql`
-- PDF-звіт: `../TesliaDiana/lab5/DB_Lab5_Teslia_Diana_IM-41.pdf`
+SELECT з нормалізованої схеми через JOIN — ті ж дані, але без дублювання.
