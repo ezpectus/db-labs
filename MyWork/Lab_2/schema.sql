@@ -51,3 +51,20 @@ CREATE TABLE "Comment" (
     user_id     UUID NOT NULL REFERENCES "User"(id) ON DELETE CASCADE,
     video_id    UUID NOT NULL REFERENCES "Video"(id) ON DELETE CASCADE
 );
+
+-- 4. Like — лайк користувача на відео
+CREATE TABLE "Like" (
+    id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id     UUID NOT NULL REFERENCES "User"(id) ON DELETE CASCADE,
+    video_id    UUID NOT NULL REFERENCES "Video"(id) ON DELETE CASCADE,
+    CONSTRAINT uniq_like UNIQUE(user_id, video_id)
+);
+
+-- 5. Subscription — підписка одного користувача на іншого
+CREATE TABLE "Subscription" (
+    id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    subscriber_id UUID NOT NULL REFERENCES "User"(id) ON DELETE CASCADE,
+    channel_id    UUID NOT NULL REFERENCES "User"(id) ON DELETE CASCADE,
+    created_at    TIMESTAMP NOT NULL DEFAULT now(),
+    CONSTRAINT uniq_subscription UNIQUE(subscriber_id, channel_id)
+);
