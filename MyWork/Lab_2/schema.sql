@@ -66,5 +66,6 @@ CREATE TABLE "Subscription" (
     subscriber_id UUID NOT NULL REFERENCES "User"(id) ON DELETE CASCADE,
     channel_id    UUID NOT NULL REFERENCES "User"(id) ON DELETE CASCADE,
     created_at    TIMESTAMP NOT NULL DEFAULT now(),
-    CONSTRAINT uniq_subscription UNIQUE(subscriber_id, channel_id)
+    CONSTRAINT uniq_subscription UNIQUE(subscriber_id, channel_id),
+    CONSTRAINT check_no_self_subscribe CHECK (subscriber_id <> channel_id)
 );
