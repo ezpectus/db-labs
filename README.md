@@ -23,8 +23,7 @@ DB_labs/
 │   ├── Lab_3/     — OLTP: SELECT, INSERT, UPDATE, DELETE ✅
 │   ├── Lab_4/     — OLAP: JOIN, агрегація, GROUP BY, HAVING ✅
 │   ├── Lab_5/     — Нормалізація (1NF–3NF) ✅
-│   ├── Lab_6/     — Міграції схем (Prisma ORM) ✅
-│   └── extras/    — Додаткові SQL-запити
+│   └── Lab_6/     — Міграції схем (Prisma ORM) ✅
 ├── DB_Labs/       — Офіційні завдання лабораторних (не в git)
 └── DB_template/   — Темплейт оформлення (VuePress, не в git)
 ```
