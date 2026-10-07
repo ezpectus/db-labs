@@ -52,12 +52,11 @@ CREATE TABLE "Comment" (
     video_id    UUID NOT NULL REFERENCES "Video"(id) ON DELETE CASCADE
 );
 
--- 4. Like — лайк користувача на відео
+-- 4. Like — лайк користувача на відео (композитний PK: пара юзер+відео)
 CREATE TABLE "Like" (
-    id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id     UUID NOT NULL REFERENCES "User"(id) ON DELETE CASCADE,
     video_id    UUID NOT NULL REFERENCES "Video"(id) ON DELETE CASCADE,
-    CONSTRAINT uniq_like UNIQUE(user_id, video_id)
+    PRIMARY KEY (user_id, video_id)
 );
 
 -- 5. Subscription — підписка одного користувача на іншого
@@ -99,12 +98,12 @@ INSERT INTO "Comment" (id, text, user_id, video_id) VALUES
     ('c3d4e5f6-0005-0000-0000-000000000005', 'Best cover of this song I have heard.', 'a1b2c3d4-0003-0000-0000-000000000003', 'b2c3d4e5-0005-0000-0000-000000000005');
 
 -- 4. Лайки (5 рядків)
-INSERT INTO "Like" (id, user_id, video_id) VALUES
-    ('d4e5f6a7-0001-0000-0000-000000000001', 'a1b2c3d4-0002-0000-0000-000000000002', 'b2c3d4e5-0001-0000-0000-000000000001'),
-    ('d4e5f6a7-0002-0000-0000-000000000002', 'a1b2c3d4-0001-0000-0000-000000000001', 'b2c3d4e5-0002-0000-0000-000000000002'),
-    ('d4e5f6a7-0003-0000-0000-000000000003', 'a1b2c3d4-0004-0000-0000-000000000004', 'b2c3d4e5-0003-0000-0000-000000000003'),
-    ('d4e5f6a7-0004-0000-0000-000000000004', 'a1b2c3d4-0005-0000-0000-000000000005', 'b2c3d4e5-0004-0000-0000-000000000004'),
-    ('d4e5f6a7-0005-0000-0000-000000000005', 'a1b2c3d4-0003-0000-0000-000000000003', 'b2c3d4e5-0005-0000-0000-000000000005');
+INSERT INTO "Like" (user_id, video_id) VALUES
+    ('a1b2c3d4-0002-0000-0000-000000000002', 'b2c3d4e5-0001-0000-0000-000000000001'),
+    ('a1b2c3d4-0001-0000-0000-000000000001', 'b2c3d4e5-0002-0000-0000-000000000002'),
+    ('a1b2c3d4-0004-0000-0000-000000000004', 'b2c3d4e5-0003-0000-0000-000000000003'),
+    ('a1b2c3d4-0005-0000-0000-000000000005', 'b2c3d4e5-0004-0000-0000-000000000004'),
+    ('a1b2c3d4-0003-0000-0000-000000000003', 'b2c3d4e5-0005-0000-0000-000000000005');
 
 -- 5. Підписки (5 рядків)
 INSERT INTO "Subscription" (id, subscriber_id, channel_id) VALUES
