@@ -59,13 +59,12 @@ CREATE TABLE "Like" (
     PRIMARY KEY (user_id, video_id)
 );
 
--- 5. Subscription — підписка одного користувача на іншого
+-- 5. Subscription — підписка одного користувача на іншого (композитний PK)
 CREATE TABLE "Subscription" (
-    id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     subscriber_id UUID NOT NULL REFERENCES "User"(id) ON DELETE CASCADE,
     channel_id    UUID NOT NULL REFERENCES "User"(id) ON DELETE CASCADE,
     created_at    TIMESTAMP NOT NULL DEFAULT now(),
-    CONSTRAINT uniq_subscription UNIQUE(subscriber_id, channel_id),
+    PRIMARY KEY (subscriber_id, channel_id),
     CONSTRAINT check_no_self_subscribe CHECK (subscriber_id <> channel_id)
 );
 
@@ -106,12 +105,12 @@ INSERT INTO "Like" (user_id, video_id) VALUES
     ('a1b2c3d4-0003-0000-0000-000000000003', 'b2c3d4e5-0005-0000-0000-000000000005');
 
 -- 5. Підписки (5 рядків)
-INSERT INTO "Subscription" (id, subscriber_id, channel_id) VALUES
-    ('e5f6a7b8-0001-0000-0000-000000000001', 'a1b2c3d4-0002-0000-0000-000000000002', 'a1b2c3d4-0001-0000-0000-000000000001'),
-    ('e5f6a7b8-0002-0000-0000-000000000002', 'a1b2c3d4-0001-0000-0000-000000000001', 'a1b2c3d4-0002-0000-0000-000000000002'),
-    ('e5f6a7b8-0003-0000-0000-000000000003', 'a1b2c3d4-0004-0000-0000-000000000004', 'a1b2c3d4-0003-0000-0000-000000000003'),
-    ('e5f6a7b8-0004-0000-0000-000000000004', 'a1b2c3d4-0005-0000-0000-000000000005', 'a1b2c3d4-0004-0000-0000-000000000004'),
-    ('e5f6a7b8-0005-0000-0000-000000000005', 'a1b2c3d4-0003-0000-0000-000000000003', 'a1b2c3d4-0005-0000-0000-000000000005');
+INSERT INTO "Subscription" (subscriber_id, channel_id) VALUES
+    ('a1b2c3d4-0002-0000-0000-000000000002', 'a1b2c3d4-0001-0000-0000-000000000001'),
+    ('a1b2c3d4-0001-0000-0000-000000000001', 'a1b2c3d4-0002-0000-0000-000000000002'),
+    ('a1b2c3d4-0004-0000-0000-000000000004', 'a1b2c3d4-0003-0000-0000-000000000003'),
+    ('a1b2c3d4-0005-0000-0000-000000000005', 'a1b2c3d4-0004-0000-0000-000000000004'),
+    ('a1b2c3d4-0003-0000-0000-000000000003', 'a1b2c3d4-0005-0000-0000-000000000005');
 
 -- ============================================
 -- Перевірка даних
