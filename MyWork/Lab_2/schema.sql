@@ -28,7 +28,8 @@ CREATE TABLE "User" (
     avatar      VARCHAR(500),
     banner      VARCHAR(500),
     description TEXT,
-    created_at  TIMESTAMP NOT NULL DEFAULT now()
+    created_at  TIMESTAMP NOT NULL DEFAULT now(),
+    CONSTRAINT check_auth_method CHECK (password IS NOT NULL OR google_id IS NOT NULL)
 );
 
 -- 2. Video — відео, завантажене користувачем
