@@ -39,7 +39,7 @@ CREATE TABLE "Video" (
     description TEXT,
     url         VARCHAR(500) NOT NULL,
     thumbnail   VARCHAR(500),
-    views       INTEGER DEFAULT 0,
+    views       INTEGER NOT NULL DEFAULT 0 CHECK (views >= 0),
     created_at  TIMESTAMP NOT NULL DEFAULT now(),
     author_id   UUID NOT NULL REFERENCES "User"(id) ON DELETE CASCADE
 );
