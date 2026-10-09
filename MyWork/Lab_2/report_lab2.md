@@ -264,6 +264,28 @@ INSERT INTO "Subscription" (subscriber_id, channel_id) VALUES
 
 ---
 
+## Діаграма схеми — до та після рефакторингу
+
+**Старий варіант** (сурогатні `id` + `UNIQUE` у Like/Subscription):
+
+<div style="text-align: center;">
+
+<img src="screenshots/er_schema_old.png" alt="ER-діаграма — старий варіант з сурогатними id" style="width: 100%; max-width: 800px;">
+
+</div>
+
+**Новий варіант** (композитні первинні ключі у Like/Subscription + CHECK на спосіб входу та views):
+
+<div style="text-align: center;">
+
+<img src="screenshots/er_schema_new.png" alt="ER-діаграма — новий варіант з композитними ключами" style="width: 100%; max-width: 800px;">
+
+</div>
+
+Різниця: у таблиць-зв'язок `Like` і `Subscription` прибрано сурогатний `id` — пара зовнішніх ключів сама є первинним ключем. У `User` додано перевірку способу входу (CHECK: пароль або google_id), у `Video` — перевірку `views >= 0`.
+
+---
+
 ## Будь які припущення чи обмеження
 
 - Імена таблиць вказані в подвійних лапках (`"User"`, `"Video"`, `"Comment"`, `"Like"`) оскільки ці слова є зарезервованими в PostgreSQL. Подвійні лапки зберігають регістр і роблять імена case-sensitive.
