@@ -55,3 +55,53 @@ VALUES (
 
 -- Перевірка
 SELECT * FROM "Comment" WHERE text = 'Amazing tutorial, learned so much!';
+
+-- ============================================
+-- UPDATE
+-- ============================================
+
+-- 1. Збільшити лічильник переглядів відео на 1
+-- До
+SELECT title, views FROM "Video" WHERE title = 'PostgreSQL Tutorial for Beginners';
+
+-- UPDATE
+UPDATE "Video" SET views = views + 1 WHERE title = 'PostgreSQL Tutorial for Beginners';
+
+-- Після
+SELECT title, views FROM "Video" WHERE title = 'PostgreSQL Tutorial for Beginners';
+
+-- 2. Змінити description користувача
+-- До
+SELECT username, description FROM "User" WHERE username = 'maria_gaming';
+
+-- UPDATE
+UPDATE "User" SET description = 'Gaming streamer. RPGs, indie games, and horror games.' WHERE username = 'maria_gaming';
+
+-- Після
+SELECT username, description FROM "User" WHERE username = 'maria_gaming';
+
+-- ============================================
+-- DELETE
+-- ============================================
+
+-- 1. Видалити коментар (просте видалення, немає FK на цю таблицю)
+-- До
+SELECT * FROM "Comment" WHERE text = 'Amazing tutorial, learned so much!';
+
+-- DELETE
+DELETE FROM "Comment" WHERE text = 'Amazing tutorial, learned so much!';
+
+-- Після
+SELECT * FROM "Comment" WHERE text = 'Amazing tutorial, learned so much!';
+
+-- 2. Видалити користувача з відео — перевірка CASCADE
+-- До: показуємо користувача та його відео
+SELECT username FROM "User" WHERE username = 'kate_art';
+SELECT title FROM "Video" WHERE author_id = (SELECT id FROM "User" WHERE username = 'kate_art');
+
+-- DELETE: видаляємо користувача → CASCADE видаляє відео
+DELETE FROM "User" WHERE username = 'kate_art';
+
+-- Після: користувача немає, відео теж немає (CASCADE)
+SELECT * FROM "User" WHERE username = 'kate_art';
+SELECT * FROM "Video" WHERE title = 'Digital Painting Tutorial — Procreate';
