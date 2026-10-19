@@ -48,3 +48,28 @@ LEFT JOIN "Comment" c ON v.id = c.video_id
 GROUP BY v.title
 ORDER BY comment_count DESC;
 
+-- ============================================
+-- ФІЛЬТРУВАННЯ ГРУП (HAVING)
+-- ============================================
+
+-- 1. Автори з більш ніж 1 відео
+SELECT u.username, COUNT(v.id) AS video_count
+FROM "User" u
+INNER JOIN "Video" v ON u.id = v.author_id
+GROUP BY u.username
+HAVING COUNT(v.id) > 1;
+
+-- 2. Відео з більш ніж 1 коментарем
+SELECT v.title, COUNT(c.id) AS comment_count
+FROM "Video" v
+INNER JOIN "Comment" c ON v.id = c.video_id
+GROUP BY v.title
+HAVING COUNT(c.id) > 1;
+
+-- 3. Автори з сумарними переглядами > 20000
+SELECT u.username, SUM(v.views) AS total_views
+FROM "User" u
+INNER JOIN "Video" v ON u.id = v.author_id
+GROUP BY u.username
+HAVING SUM(v.views) > 20000;
+
