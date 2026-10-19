@@ -271,11 +271,45 @@ INSERT INTO "Subscription" (subscriber_id, channel_id) VALUES
 
 </div>
 
-Перевірка даних — SELECT з усіх таблиць (User, Video, Comment, Like, Subscription):
+Перевірка даних — `SELECT *` з кожної таблиці окремо (по 5 рядків). На скріншотах видно композитні первинні ключі у `Like` та `Subscription` (пара FK сама є ключем — окремого `id` немає) і тип `created_at` — `timestamp with time zone`:
+
+**User:**
 
 <div style="text-align: center;">
 
-<img src="screenshots/select_all_tables.png" alt="SELECT з усіх таблиць — дані в таблицях" style="width: 100%; max-width: 800px;">
+<img src="screenshots/select_users.png" alt="SELECT * FROM User — 5 користувачів" style="width: 100%; max-width: 800px;">
+
+</div>
+
+**Video:**
+
+<div style="text-align: center;">
+
+<img src="screenshots/select_videos.png" alt="SELECT * FROM Video — 5 відео" style="width: 100%; max-width: 800px;">
+
+</div>
+
+**Comment:**
+
+<div style="text-align: center;">
+
+<img src="screenshots/select_comments.png" alt="SELECT * FROM Comment — 5 коментарів" style="width: 100%; max-width: 800px;">
+
+</div>
+
+**Like:**
+
+<div style="text-align: center;">
+
+<img src="screenshots/select_likes.png" alt="SELECT * FROM Like — композитний PK (user_id, video_id) + created_at" style="width: 100%; max-width: 800px;">
+
+</div>
+
+**Subscription:**
+
+<div style="text-align: center;">
+
+<img src="screenshots/select_subscriptions.png" alt="SELECT * FROM Subscription — композитний PK (subscriber_id, channel_id) + created_at" style="width: 100%; max-width: 800px;">
 
 </div>
 
