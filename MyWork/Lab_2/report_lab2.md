@@ -234,7 +234,7 @@ INSERT INTO "Subscription" (subscriber_id, channel_id) VALUES
 
 <div style="text-align: center;">
 
-<img src="screenshots/create_tables.png" alt="CREATE TABLE User — виконання без помилок" style="width: 100%; max-width: 800px;">
+<img src="screenshots/create_user.png" alt="CREATE TABLE User — виконання без помилок" style="width: 100%; max-width: 800px;">
 
 </div>
 
@@ -242,7 +242,7 @@ INSERT INTO "Subscription" (subscriber_id, channel_id) VALUES
 
 <div style="text-align: center;">
 
-<img src="screenshots/insert_data.png" alt="CREATE TABLE Video — виконання без помилок" style="width: 100%; max-width: 800px;">
+<img src="screenshots/create_video.png" alt="CREATE TABLE Video — виконання без помилок" style="width: 100%; max-width: 800px;">
 
 </div>
 
@@ -250,7 +250,7 @@ INSERT INTO "Subscription" (subscriber_id, channel_id) VALUES
 
 <div style="text-align: center;">
 
-<img src="screenshots/select_users.png" alt="CREATE TABLE Like — виконання без помилок" style="width: 100%; max-width: 800px;">
+<img src="screenshots/create_like.png" alt="CREATE TABLE Like — виконання без помилок" style="width: 100%; max-width: 800px;">
 
 </div>
 
@@ -258,7 +258,7 @@ INSERT INTO "Subscription" (subscriber_id, channel_id) VALUES
 
 <div style="text-align: center;">
 
-<img src="screenshots/select_videos.png" alt="CREATE TABLE Subscription — виконання без помилок" style="width: 100%; max-width: 800px;">
+<img src="screenshots/create_subscription.png" alt="CREATE TABLE Subscription — виконання без помилок" style="width: 100%; max-width: 800px;">
 
 </div>
 
@@ -266,7 +266,7 @@ INSERT INTO "Subscription" (subscriber_id, channel_id) VALUES
 
 <div style="text-align: center;">
 
-<img src="screenshots/select_comments.png" alt="INSERT — заповнення всіх таблиць даними" style="width: 100%; max-width: 800px;">
+<img src="screenshots/insert_data.png" alt="INSERT — заповнення всіх таблиць даними" style="width: 100%; max-width: 800px;">
 
 </div>
 
