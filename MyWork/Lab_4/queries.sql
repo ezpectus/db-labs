@@ -23,3 +23,28 @@ SELECT MIN(views) AS min_views, MAX(views) AS max_views FROM "Video";
 -- 5. AVG — середня кількість переглядів
 SELECT ROUND(AVG(views), 0) AS avg_views FROM "Video";
 
+-- ============================================
+-- ГРУПУВАННЯ (GROUP BY)
+-- ============================================
+
+-- 1. Кількість відео кожного автора
+SELECT u.username, COUNT(v.id) AS video_count
+FROM "User" u
+INNER JOIN "Video" v ON u.id = v.author_id
+GROUP BY u.username
+ORDER BY video_count DESC;
+
+-- 2. Сумарні перегляди за автором
+SELECT u.username, SUM(v.views) AS total_views
+FROM "User" u
+INNER JOIN "Video" v ON u.id = v.author_id
+GROUP BY u.username
+ORDER BY total_views DESC;
+
+-- 3. Кількість коментарів для кожного відео
+SELECT v.title, COUNT(c.id) AS comment_count
+FROM "Video" v
+LEFT JOIN "Comment" c ON v.id = c.video_id
+GROUP BY v.title
+ORDER BY comment_count DESC;
+
