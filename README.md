@@ -11,7 +11,7 @@
 База даних розроблена на основі реального проєкту **VideoHub** — відеохостинг-платформи (аналог YouTube).
 Вихідний код проєкту: [https://github.com/ezpectus/VideoHub](https://github.com/ezpectus/VideoHub)
 
-Схема БД: `User`, `Video`, `Comment`, `Like`, `Subscription` — 5 сутностей, 4 зв'язки.
+Схема БД: `User`, `Video`, `Comment`, `Like`, `Subscription` — 5 сутностей, 7 зв'язків.
 
 ## Структура
 
