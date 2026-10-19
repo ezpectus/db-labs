@@ -67,7 +67,8 @@
 3. **Перевірка способу входу в `User`.** Раніше `password` і `google_id` могли бути NULL одночасно — можна було створити користувача, в якого неможливо залогінитись. Додано `CHECK (password IS NOT NULL OR google_id IS NOT NULL)` — email і так `NOT NULL`, тож тепер у кожного юзера є ідентифікатор і хоча б один спосіб авторизації.
 4. **Перевірка `views >= 0` у `Video`.** Лічильник переглядів не може бути від'ємним — додано CHECK-обмеження.
 5. **Діаграми «до/після».** Побудовано два варіанти схеми — старий (`er_schema_old.mmd`, з сурогатними id) і новий (`er_schema_new.mmd`, з композитними ключами) — вони показані в кінці звіту для порівняння.
-6. **`created_at` у `Like`.** Дата створення була в усіх таблицях, крім `Like` — дрібна неузгодженість: підписка зберігає момент, а лайк ні. Додано `created_at TIMESTAMP NOT NULL DEFAULT now()` — тепер кожен запис у базі має дату створення.
+6. **`created_at` у `Like`.** Дата створення була в усіх таблицях, крім `Like` — дрібна неузгодженість: підписка зберігає момент, а лайк ні. Додано `created_at` — тепер кожен запис у базі має дату створення.
+7. **`TIMESTAMPTZ` замість `TIMESTAMP` для всіх `created_at`.** `TIMESTAMP` зберігає «голий» час без зони: на хостингу в іншій зоні користувач бачив би серверний час як є. `TIMESTAMPTZ` зберігає абсолютний момент (усередині UTC) і при читанні конвертує під часову зону сесії — правильний вибір для будь-якого глобального сервісу.
 
 Порівняння старої та нової схеми візуально — у розділі «Діаграма схеми — до та після рефакторингу» нижче.
 
@@ -93,7 +94,7 @@ CREATE TABLE "User" (
     avatar      VARCHAR(500),
     banner      VARCHAR(500),
     description TEXT,
-    created_at  TIMESTAMP NOT NULL DEFAULT now(),
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
     CONSTRAINT check_auth_method CHECK (password IS NOT NULL OR google_id IS NOT NULL)
 );
 ```
@@ -108,7 +109,7 @@ CREATE TABLE "Video" (
     url         VARCHAR(500) NOT NULL,
     thumbnail   VARCHAR(500),
     views       INTEGER NOT NULL DEFAULT 0 CHECK (views >= 0),
-    created_at  TIMESTAMP NOT NULL DEFAULT now(),
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
     author_id   UUID NOT NULL REFERENCES "User"(id) ON DELETE CASCADE
 );
 ```
@@ -119,7 +120,7 @@ CREATE TABLE "Video" (
 CREATE TABLE "Comment" (
     id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     text        TEXT NOT NULL,
-    created_at  TIMESTAMP NOT NULL DEFAULT now(),
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
     user_id     UUID NOT NULL REFERENCES "User"(id) ON DELETE CASCADE,
     video_id    UUID NOT NULL REFERENCES "Video"(id) ON DELETE CASCADE
 );
@@ -131,7 +132,7 @@ CREATE TABLE "Comment" (
 CREATE TABLE "Like" (
     user_id     UUID NOT NULL REFERENCES "User"(id) ON DELETE CASCADE,
     video_id    UUID NOT NULL REFERENCES "Video"(id) ON DELETE CASCADE,
-    created_at  TIMESTAMP NOT NULL DEFAULT now(),
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
     PRIMARY KEY (user_id, video_id)
 );
 ```
@@ -142,7 +143,7 @@ CREATE TABLE "Like" (
 CREATE TABLE "Subscription" (
     subscriber_id UUID NOT NULL REFERENCES "User"(id) ON DELETE CASCADE,
     channel_id    UUID NOT NULL REFERENCES "User"(id) ON DELETE CASCADE,
-    created_at    TIMESTAMP NOT NULL DEFAULT now(),
+    created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
     PRIMARY KEY (subscriber_id, channel_id),
     CONSTRAINT check_no_self_subscribe CHECK (subscriber_id <> channel_id)
 );
@@ -163,7 +164,7 @@ CREATE TABLE "Subscription" (
 - `Video`: `CHECK (views >= 0)` — лічильник переглядів не може бути від'ємним.
 - `Subscription`: `CHECK(subscriber_id <> channel_id)` — заборона підписки на самого себе.
 
-**DEFAULT** — значення за замовчуванням. Поле `views` у таблиці `Video` має `DEFAULT 0` — нове відео стартує з нульовою кількістю переглядів. Поле `created_at` у всіх таблицях має `DEFAULT now()` — дата встановлюється автоматично при вставці запису.
+**DEFAULT** — значення за замовчуванням. Поле `views` у таблиці `Video` має `DEFAULT 0` — нове відео стартує з нульовою кількістю переглядів. Поле `created_at` у всіх таблицях має тип `TIMESTAMPTZ` і `DEFAULT now()` — абсолютний час із зоною (усередині UTC, на виході конвертується під зону сесії), встановлюється автоматично при вставці запису.
 
 **NOT NULL** — обов'язкові поля. `email` та `username` в User, `title` та `url` в Video, `text` в Comment, всі FK-поля — не можуть бути порожніми. Поле `password` може бути NULL (для користувачів з Google OAuth).
 
@@ -324,6 +325,6 @@ INSERT INTO "Subscription" (subscriber_id, channel_id) VALUES
 
 - Лічильник переглядів (views) — INTEGER, починається з 0. У реальному проєкті міг би бути BIGINT для дуже популярних відео.
 
-- Дата створення (created_at) — TIMESTAMP з точністю до мікросекунд, встановлюється автоматично через DEFAULT now().
+- Дата створення (created_at) — TIMESTAMPTZ: зберігає абсолютний момент (усередині UTC), при читанні конвертується під часову зону сесії; точність до мікросекунд; встановлюється автоматично через DEFAULT now().
 
 - Тестові дані використовують фіксовані UUID (a1b2c3d4-...) для передбачуваності зв'язків між таблицями. У реальному проєкті UUID генерувались би автоматично.

@@ -28,7 +28,7 @@ CREATE TABLE "User" (
     avatar      VARCHAR(500),
     banner      VARCHAR(500),
     description TEXT,
-    created_at  TIMESTAMP NOT NULL DEFAULT now(),
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
     CONSTRAINT check_auth_method CHECK (password IS NOT NULL OR google_id IS NOT NULL)
 );
 
@@ -40,7 +40,7 @@ CREATE TABLE "Video" (
     url         VARCHAR(500) NOT NULL,
     thumbnail   VARCHAR(500),
     views       INTEGER NOT NULL DEFAULT 0 CHECK (views >= 0),
-    created_at  TIMESTAMP NOT NULL DEFAULT now(),
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
     author_id   UUID NOT NULL REFERENCES "User"(id) ON DELETE CASCADE
 );
 
@@ -48,7 +48,7 @@ CREATE TABLE "Video" (
 CREATE TABLE "Comment" (
     id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     text        TEXT NOT NULL,
-    created_at  TIMESTAMP NOT NULL DEFAULT now(),
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
     user_id     UUID NOT NULL REFERENCES "User"(id) ON DELETE CASCADE,
     video_id    UUID NOT NULL REFERENCES "Video"(id) ON DELETE CASCADE
 );
@@ -57,7 +57,7 @@ CREATE TABLE "Comment" (
 CREATE TABLE "Like" (
     user_id     UUID NOT NULL REFERENCES "User"(id) ON DELETE CASCADE,
     video_id    UUID NOT NULL REFERENCES "Video"(id) ON DELETE CASCADE,
-    created_at  TIMESTAMP NOT NULL DEFAULT now(),
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
     PRIMARY KEY (user_id, video_id)
 );
 
@@ -65,7 +65,7 @@ CREATE TABLE "Like" (
 CREATE TABLE "Subscription" (
     subscriber_id UUID NOT NULL REFERENCES "User"(id) ON DELETE CASCADE,
     channel_id    UUID NOT NULL REFERENCES "User"(id) ON DELETE CASCADE,
-    created_at    TIMESTAMP NOT NULL DEFAULT now(),
+    created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
     PRIMARY KEY (subscriber_id, channel_id),
     CONSTRAINT check_no_self_subscribe CHECK (subscriber_id <> channel_id)
 );

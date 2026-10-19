@@ -18,7 +18,7 @@ entity "User" as user {
   avatar : VARCHAR <<NULLABLE>>
   banner : VARCHAR <<NULLABLE>>
   description : TEXT <<NULLABLE>>
-  * created_at : TIMESTAMP
+  * created_at : TIMESTAMPTZ
 }
 
 entity "Video" as video {
@@ -29,7 +29,7 @@ entity "Video" as video {
   * url : VARCHAR
   thumbnail : VARCHAR <<NULLABLE>>
   views : INTEGER <<DEFAULT 0>>
-  * created_at : TIMESTAMP
+  * created_at : TIMESTAMPTZ
   * author_id : UUID <<FK>>
 }
 
@@ -37,7 +37,7 @@ entity "Comment" as comment {
   * id : UUID <<PK>>
   --
   * text : TEXT
-  * created_at : TIMESTAMP
+  * created_at : TIMESTAMPTZ
   * user_id : UUID <<FK>>
   * video_id : UUID <<FK>>
 }
@@ -47,7 +47,7 @@ entity "Like" as like {
   --
   * user_id : UUID <<FK>>
   * video_id : UUID <<FK>>
-  * created_at : TIMESTAMP
+  * created_at : TIMESTAMPTZ
   <<UNIQUE(user_id, video_id)>>
 }
 
@@ -56,7 +56,7 @@ entity "Subscription" as sub {
   --
   * subscriber_id : UUID <<FK>>
   * channel_id : UUID <<FK>>
-  * created_at : TIMESTAMP
+  * created_at : TIMESTAMPTZ
   <<UNIQUE(subscriber_id, channel_id)>>
 }
 
