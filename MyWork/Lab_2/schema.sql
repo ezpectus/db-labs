@@ -57,6 +57,7 @@ CREATE TABLE "Comment" (
 CREATE TABLE "Like" (
     user_id     UUID NOT NULL REFERENCES "User"(id) ON DELETE CASCADE,
     video_id    UUID NOT NULL REFERENCES "Video"(id) ON DELETE CASCADE,
+    created_at  TIMESTAMP NOT NULL DEFAULT now(),
     PRIMARY KEY (user_id, video_id)
 );
 

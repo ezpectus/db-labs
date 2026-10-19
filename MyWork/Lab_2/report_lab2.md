@@ -67,6 +67,7 @@
 3. **Перевірка способу входу в `User`.** Раніше `password` і `google_id` могли бути NULL одночасно — можна було створити користувача, в якого неможливо залогінитись. Додано `CHECK (password IS NOT NULL OR google_id IS NOT NULL)` — email і так `NOT NULL`, тож тепер у кожного юзера є ідентифікатор і хоча б один спосіб авторизації.
 4. **Перевірка `views >= 0` у `Video`.** Лічильник переглядів не може бути від'ємним — додано CHECK-обмеження.
 5. **Діаграми «до/після».** Побудовано два варіанти схеми — старий (`er_schema_old.mmd`, з сурогатними id) і новий (`er_schema_new.mmd`, з композитними ключами) — вони показані в кінці звіту для порівняння.
+6. **`created_at` у `Like`.** Дата створення була в усіх таблицях, крім `Like` — дрібна неузгодженість: підписка зберігає момент, а лайк ні. Додано `created_at TIMESTAMP NOT NULL DEFAULT now()` — тепер кожен запис у базі має дату створення.
 
 Порівняння старої та нової схеми візуально — у розділі «Діаграма схеми — до та після рефакторингу» нижче.
 
@@ -130,6 +131,7 @@ CREATE TABLE "Comment" (
 CREATE TABLE "Like" (
     user_id     UUID NOT NULL REFERENCES "User"(id) ON DELETE CASCADE,
     video_id    UUID NOT NULL REFERENCES "Video"(id) ON DELETE CASCADE,
+    created_at  TIMESTAMP NOT NULL DEFAULT now(),
     PRIMARY KEY (user_id, video_id)
 );
 ```
@@ -302,7 +304,7 @@ INSERT INTO "Subscription" (subscriber_id, channel_id) VALUES
 
 ## Будь які припущення чи обмеження
 
-- Імена таблиць вказані в подвійних лапках (`"User"`, `"Video"`, `"Comment"`, `"Like"`) оскільки ці слова є зарезервованими в PostgreSQL. Подвійні лапки зберігають регістр і роблять імена case-sensitive.
+- Імена таблиць взято в подвійні лапки: `User` та `Like` — зарезервовані слова SQL (`USER`, `LIKE`), тому лапки для них обов'язкові; `Video`, `Comment`, `Subscription` — в лапках для однорідності стилю. Подвійні лапки зберігають регістр і роблять імена case-sensitive.
 
 - Використовується розширення `uuid-ossp` для генерації UUID через функцію `uuid_generate_v4()`. Альтернатива — `gen_random_uuid()` з модуля `pgcrypto`, але `uuid-ossp` є стандартним і добре документованим.
 
@@ -322,6 +324,6 @@ INSERT INTO "Subscription" (subscriber_id, channel_id) VALUES
 
 - Лічильник переглядів (views) — INTEGER, починається з 0. У реальному проєкті міг би бути BIGINT для дуже популярних відео.
 
-- Дата створення (created_at) — TIMESTAMP з мілісекундами, встановлюється автоматично через DEFAULT now().
+- Дата створення (created_at) — TIMESTAMP з точністю до мікросекунд, встановлюється автоматично через DEFAULT now().
 
 - Тестові дані використовують фіксовані UUID (a1b2c3d4-...) для передбачуваності зв'язків між таблицями. У реальному проєкті UUID генерувались би автоматично.

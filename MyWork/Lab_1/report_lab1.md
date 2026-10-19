@@ -136,6 +136,7 @@
 - id: PK — унікальний ідентифікатор лайка (UUID)
 - user_id: FK → User(id), NOT NULL — хто поставив лайк
 - video_id: FK → Video(id), NOT NULL — на яке відео поставлено лайк
+- created_at: NOT NULL, DEFAULT now() — дата, коли поставлено лайк
 - UNIQUE(user_id, video_id) — один користувач може поставити лише один лайк на одне відео
 
 **}**

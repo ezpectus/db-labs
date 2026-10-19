@@ -47,6 +47,7 @@ entity "Like" as like {
   --
   * user_id : UUID <<FK>>
   * video_id : UUID <<FK>>
+  * created_at : TIMESTAMP
   <<UNIQUE(user_id, video_id)>>
 }
 
