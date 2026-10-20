@@ -5,6 +5,35 @@
 -- ============================================
 
 -- ============================================
+-- ДОДАТКОВІ ТЕСТОВІ ДАНІ ДЛЯ АНАЛІТИКИ
+-- Базові дані з Lab 2 занадто рівномірні (у кожного автора
+-- рівно 1 відео, у кожного відео рівно 1 коментар) —
+-- агрегати та HAVING повертали б порожні результати.
+-- Додаємо нерівномірність: у одного автора 3 відео,
+-- в одного відео 3 коментарі, є користувач без відео.
+-- ============================================
+
+-- Новий користувач БЕЗ відео (для LEFT/FULL JOIN)
+INSERT INTO "User" (id, email, username, password, google_id, avatar, banner, description) VALUES
+    ('a1b2c3d4-0006-0000-0000-000000000006', 'guest@example.com', 'test_guest', 'hashed_pass_6', NULL, NULL, NULL, 'Just watching, not uploading yet.');
+
+-- Ще 2 відео для denys_dev (тепер у нього 3 відео)
+INSERT INTO "Video" (id, title, description, url, thumbnail, views, author_id) VALUES
+    ('b2c3d4e5-0006-0000-0000-000000000006', 'Docker Compose in 15 Minutes', 'Quick start with Docker Compose for local dev.', 'https://cdn.videohub.com/videos/vid6.mp4', 'https://cdn.videohub.com/thumbs/vid6.jpg', 8500, 'a1b2c3d4-0001-0000-0000-000000000001'),
+    ('b2c3d4e5-0007-0000-0000-000000000007', 'REST API Design Best Practices', 'How to design clean REST endpoints.', 'https://cdn.videohub.com/videos/vid7.mp4', 'https://cdn.videohub.com/thumbs/vid7.jpg', 23000, 'a1b2c3d4-0001-0000-0000-000000000001');
+
+-- Ще 2 коментарі до першого відео (тепер у нього 3)
+INSERT INTO "Comment" (id, text, user_id, video_id) VALUES
+    ('c3d4e5f6-0006-0000-0000-000000000006', 'Saved me hours, thanks!', 'a1b2c3d4-0004-0000-0000-000000000004', 'b2c3d4e5-0001-0000-0000-000000000001'),
+    ('c3d4e5f6-0007-0000-0000-000000000007', 'Waiting for part 2!', 'a1b2c3d4-0005-0000-0000-000000000005', 'b2c3d4e5-0001-0000-0000-000000000001');
+
+-- Ще 3 лайки (різна кількість лайків на відео)
+INSERT INTO "Like" (user_id, video_id) VALUES
+    ('a1b2c3d4-0002-0000-0000-000000000002', 'b2c3d4e5-0003-0000-0000-000000000003'),
+    ('a1b2c3d4-0004-0000-0000-000000000004', 'b2c3d4e5-0002-0000-0000-000000000002'),
+    ('a1b2c3d4-0006-0000-0000-000000000006', 'b2c3d4e5-0001-0000-0000-000000000001');
+
+-- ============================================
 -- БАЗОВА АГРЕГАЦІЯ
 -- ============================================
 
@@ -72,4 +101,3 @@ FROM "User" u
 INNER JOIN "Video" v ON u.id = v.author_id
 GROUP BY u.username
 HAVING SUM(v.views) > 20000;
-
