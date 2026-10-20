@@ -32,7 +32,7 @@ ORDER BY conrelid::regclass::text, contype;
 SELECT table_name, column_name, data_type
 FROM information_schema.columns
 WHERE table_schema = 'public'
-  AND data_type IN ('ARRAY', 'text[]')
+  AND data_type = 'ARRAY'
   AND table_name IN ('User', 'Video', 'Comment', 'Like', 'Subscription');
 -- Очікуємо: 0 рядків — порушень 1NF немає.
 
@@ -97,8 +97,17 @@ UPDATE video_stats SET author_email = 'new_email@example.com'
 WHERE author_id = (SELECT id FROM "User" WHERE username = 'denys_dev');
 -- Якби відео було 1000 — 1000 оновлень замість одного в "User".
 
--- Аномалія ВСТАВКИ: не можна зберегти email нового автора,
--- у якого ще немає відео (video_id — PRIMARY KEY, NOT NULL).
+-- Аномалія ВСТАВКИ — жива демонстрація: розкоментуй і виконай,
+-- щоб зняти скрін тексту помилки:
+-- INSERT INTO video_stats (video_id, title, views, author_id, author_email)
+-- VALUES (NULL, 'Факт без відео', 0,
+--         (SELECT id FROM "User" WHERE username = 'oleg_cook'),
+--         'oleg@example.com');
+-- Очікувана помилка:
+-- ERROR: null value in column "video_id" violates not-null constraint
+-- Факт «новий автор з email» неможливо зберегти без відео —
+-- факт живе не за своєю адресою.
+
 -- Аномалія ВИДАЛЕННЯ: видалення останнього відео автора
 -- знищує і факт існування його email у цій таблиці.
 DELETE FROM video_stats
