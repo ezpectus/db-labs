@@ -71,10 +71,11 @@ GROUP BY u.username
 ORDER BY total_views DESC;
 
 -- 3. Кількість коментарів для кожного відео
+-- (LEFT JOIN — відео без коментарів теж у списку, з 0)
 SELECT v.title, COUNT(c.id) AS comment_count
 FROM "Video" v
 LEFT JOIN "Comment" c ON v.id = c.video_id
-GROUP BY v.title
+GROUP BY v.id, v.title
 ORDER BY comment_count DESC;
 
 -- ============================================
@@ -88,12 +89,12 @@ INNER JOIN "Video" v ON u.id = v.author_id
 GROUP BY u.username
 HAVING COUNT(v.id) > 1;
 
--- 2. Відео з більш ніж 1 коментарем
+-- 2. Відео з більш ніж 2 коментарями
 SELECT v.title, COUNT(c.id) AS comment_count
 FROM "Video" v
 INNER JOIN "Comment" c ON v.id = c.video_id
-GROUP BY v.title
-HAVING COUNT(c.id) > 1;
+GROUP BY v.id, v.title
+HAVING COUNT(c.id) > 2;
 
 -- 3. Автори з сумарними переглядами > 20000
 SELECT u.username, SUM(v.views) AS total_views
@@ -101,3 +102,71 @@ FROM "User" u
 INNER JOIN "Video" v ON u.id = v.author_id
 GROUP BY u.username
 HAVING SUM(v.views) > 20000;
+
+-- ============================================
+-- JOIN (різні типи з'єднань)
+-- ============================================
+
+-- 1. INNER JOIN — відео з іменами авторів (тільки збіги)
+SELECT v.title, u.username AS author
+FROM "Video" v
+INNER JOIN "User" u ON v.author_id = u.id;
+
+-- 2. LEFT JOIN — усі користувачі; ті, хто без відео, мають NULL
+SELECT u.username, v.title
+FROM "User" u
+LEFT JOIN "Video" v ON v.author_id = u.id;
+
+-- 2a. Анти-джойн: користувачі БЕЗ жодного відео
+-- (test_guest — єдиний, хто ще нічого не завантажив)
+SELECT u.username
+FROM "User" u
+LEFT JOIN "Video" v ON v.author_id = u.id
+WHERE v.id IS NULL;
+
+-- 3. FULL OUTER JOIN — усі користувачі та всі відео.
+-- У нашій схемі відео без автора неможливе (author_id NOT NULL),
+-- тому FULL тут збігається з LEFT: додаткові NULL-рядки
+-- з'являються лише з боку користувачів без відео.
+SELECT u.username, v.title
+FROM "User" u
+FULL OUTER JOIN "Video" v ON v.author_id = u.id;
+
+-- 4. CROSS JOIN — всі комбінації користувачів та відео
+-- (potential audience: кому яку рекомендацію показати)
+SELECT u.username AS potential_viewer, v.title
+FROM "User" u
+CROSS JOIN "Video" v;
+
+-- ============================================
+-- БАГАТОТАБЛИЧНА АГРЕГАЦІЯ
+-- ============================================
+
+-- 1. Топ-3 автори за сумарними переглядами
+-- (JOIN + GROUP BY + ORDER BY + LIMIT)
+SELECT u.username, SUM(v.views) AS total_views
+FROM "User" u
+INNER JOIN "Video" v ON u.id = v.author_id
+GROUP BY u.username
+ORDER BY total_views DESC
+LIMIT 3;
+
+-- 2. Кожне відео з кількістю лайків та коментарів.
+-- Подвійний LEFT JOIN розмножує рядки (лайки × коментарі),
+-- тому рахуємо COUNT(DISTINCT ...) — інакше COUNT бреше.
+SELECT v.title,
+       COUNT(DISTINCT l.user_id) AS like_count,
+       COUNT(DISTINCT c.id) AS comment_count
+FROM "Video" v
+LEFT JOIN "Like" l ON l.video_id = v.id
+LEFT JOIN "Comment" c ON c.video_id = v.id
+GROUP BY v.id, v.title
+ORDER BY like_count DESC, comment_count DESC;
+
+-- 3. Підзапит: автори, чий СЕРЕДНІЙ перегляд відео
+-- вищий за загальний середній по платформі
+SELECT u.username, ROUND(AVG(v.views), 0) AS avg_views
+FROM "User" u
+INNER JOIN "Video" v ON u.id = v.author_id
+GROUP BY u.username
+HAVING AVG(v.views) > (SELECT AVG(views) FROM "Video");
