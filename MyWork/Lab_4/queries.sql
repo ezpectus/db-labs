@@ -35,42 +35,33 @@ INSERT INTO "Like" (user_id, video_id) VALUES
 
 -- ============================================
 -- БАЗОВА АГРЕГАЦІЯ
+-- Усі п'ять агрегатів одним проходом по таблиці —
+-- один скан замість п'яти окремих запитів.
 -- ============================================
 
--- 1. COUNT — кількість відео на платформі
-SELECT COUNT(*) AS total_videos FROM "Video";
-
--- 2. COUNT(DISTINCT) — кількість унікальних авторів відео
-SELECT COUNT(DISTINCT author_id) AS unique_authors FROM "Video";
-
--- 3. SUM — сумарна кількість переглядів усіх відео
-SELECT SUM(views) AS total_views FROM "Video";
-
--- 4. MIN / MAX — мінімальна та максимальна кількість переглядів
-SELECT MIN(views) AS min_views, MAX(views) AS max_views FROM "Video";
-
--- 5. AVG — середня кількість переглядів
-SELECT ROUND(AVG(views), 0) AS avg_views FROM "Video";
+SELECT COUNT(*)                    AS total_videos,
+       COUNT(DISTINCT author_id)   AS unique_authors,
+       SUM(views)                  AS total_views,
+       MIN(views)                  AS min_views,
+       MAX(views)                  AS max_views,
+       ROUND(AVG(views), 0)        AS avg_views
+FROM "Video";
 
 -- ============================================
 -- ГРУПУВАННЯ (GROUP BY)
 -- ============================================
 
--- 1. Кількість відео кожного автора
-SELECT u.username, COUNT(v.id) AS video_count
-FROM "User" u
-INNER JOIN "Video" v ON u.id = v.author_id
-GROUP BY u.username
-ORDER BY video_count DESC;
-
--- 2. Сумарні перегляди за автором
-SELECT u.username, SUM(v.views) AS total_views
+-- 1. Статистика кожного автора: кількість відео + сумарні
+-- перегляди (обидва завдання одним запитом)
+SELECT u.username,
+       COUNT(v.id)  AS video_count,
+       SUM(v.views) AS total_views
 FROM "User" u
 INNER JOIN "Video" v ON u.id = v.author_id
 GROUP BY u.username
 ORDER BY total_views DESC;
 
--- 3. Кількість коментарів для кожного відео
+-- 2. Кількість коментарів для кожного відео
 -- (LEFT JOIN — відео без коментарів теж у списку, з 0)
 SELECT v.title, COUNT(c.id) AS comment_count
 FROM "Video" v
