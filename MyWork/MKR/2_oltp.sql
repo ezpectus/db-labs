@@ -1,7 +1,5 @@
 -- КР з БД, Степаненко Денис, ІМ-051, Варіант 4
--- Завдання 2 (таблиці і дані з 1_schema.sql)
-
--- Завдання 2. OLTP запити
+-- Завдання 2. OLTP запити (дані з 1_schema.sql)
 
 -- INSERT 1: реєстрація нового клієнта
 INSERT INTO clients (full_name, email, phone, password_hash)
@@ -14,7 +12,7 @@ VALUES (4, (SELECT id FROM event_tickets WHERE event_id = 6 AND ticket_type_id =
 -- UPDATE 1: концерт The Hardkiss перенесли на день пізніше і на 21:00
 UPDATE events
 SET event_date = '2026-12-13', event_time = '21:00'
-WHERE id = 9;
+WHERE name = 'The Hardkiss';
 
 -- UPDATE 2: після продажу кількість доступних VIP-квитків на матч зменшилась
 UPDATE event_tickets
