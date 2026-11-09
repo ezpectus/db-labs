@@ -35,7 +35,7 @@ WHERE v.name = 'Палац спорту'
 ORDER BY e.event_date;
 
 -- SELECT 2: доступні квитки на концерт "Океан Ельзи" за типом квитка
-SELECT tt.name AS ticket_type, et.price, et.available_count
+SELECT tt.name AS type, et.price, et.available_count
 FROM event_tickets et
 JOIN ticket_types tt ON et.ticket_type_id = tt.id
 JOIN events e ON et.event_id = e.id
