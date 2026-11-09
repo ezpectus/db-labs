@@ -1,0 +1,53 @@
+erDiagram
+    venues ||--o{ events : "проводить"
+    events ||--o{ event_tickets : "пропонує"
+    ticket_types ||--o{ event_tickets : "тип"
+    event_tickets ||--o{ purchases : "продано в"
+    clients ||--o{ purchases : "робить"
+
+    venues {
+        int id PK
+        varchar name
+        varchar location
+        int capacity
+    }
+
+    events {
+        int id PK
+        varchar name
+        date event_date
+        time event_time
+        varchar event_type
+        int venue_id FK
+    }
+
+    ticket_types {
+        int id PK
+        varchar name
+    }
+
+    event_tickets {
+        int id PK
+        int event_id FK
+        int ticket_type_id FK
+        numeric price
+        int available_count
+    }
+
+    clients {
+        int id PK
+        varchar full_name
+        varchar email
+        varchar phone
+        varchar password_hash
+        timestamptz registered_at
+    }
+
+    purchases {
+        int id PK
+        int client_id FK
+        int event_ticket_id FK
+        timestamptz purchase_date
+        int quantity
+        numeric total_price
+    }
