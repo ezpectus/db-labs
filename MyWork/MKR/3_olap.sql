@@ -11,15 +11,15 @@ FROM purchases p
 JOIN event_tickets et ON p.event_ticket_id = et.id
 JOIN events e ON et.event_id = e.id
 GROUP BY e.event_type
-ORDER BY total_revenue DESC;
+ORDER BY total_revenue DESC, e.event_type;
 
 -- 2. Топ-10 найбільш продаваних подій (за кількістю проданих квитків)
-SELECT e.name, e.event_date, SUM(p.quantity) AS tickets_sold
+SELECT e.name, e.event_date, SUM(p.quantity) AS tickets_sold, SUM(p.total_price) AS revenue
 FROM purchases p
 JOIN event_tickets et ON p.event_ticket_id = et.id
 JOIN events e ON et.event_id = e.id
 GROUP BY e.id, e.name, e.event_date
-ORDER BY tickets_sold DESC
+ORDER BY tickets_sold DESC, e.id
 LIMIT 10;
 
 -- 3. Середня ціна проданого квитка за майданчиком
@@ -29,7 +29,7 @@ JOIN event_tickets et ON p.event_ticket_id = et.id
 JOIN events e ON et.event_id = e.id
 JOIN venues v ON e.venue_id = v.id
 GROUP BY v.id, v.name
-ORDER BY avg_ticket_price DESC;
+ORDER BY avg_ticket_price DESC, v.name;
 
 -- 4. Клієнти, які купили квитки на кілька різних подій в один і той же день
 SELECT c.full_name, e.event_date, COUNT(DISTINCT e.id) AS events_count
@@ -39,4 +39,4 @@ JOIN event_tickets et ON p.event_ticket_id = et.id
 JOIN events e ON et.event_id = e.id
 GROUP BY c.id, c.full_name, e.event_date
 HAVING COUNT(DISTINCT e.id) > 1
-ORDER BY e.event_date;
+ORDER BY e.event_date, c.full_name;
